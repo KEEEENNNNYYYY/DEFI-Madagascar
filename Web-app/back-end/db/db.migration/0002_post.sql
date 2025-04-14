@@ -1,0 +1,8 @@
+CREATE TABLE Post (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    description TEXT NOT NULL,
+    image_url VARCHAR NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id TEXT REFERENCES "user" (id) ON DELETE CASCADE
+);

@@ -1,0 +1,320 @@
+openapi: 3.0.0
+info:
+  title: API de Réseau Social pour Soutien aux Projets
+  description: API pour permettre aux utilisateurs de publier des projets, soutenir ou investir dans les projets des autres.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/
+    description: Serveur local de développement
+
+paths:
+  /auth/register:
+    post:
+      summary: Inscription d'un utilisateur
+      description: Permet à un nouvel utilisateur de s'inscrire.
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Utilisateur créé avec succès"
+        '400':
+          description: Données manquantes ou invalides
+          
+  /auth/login:
+    post:
+      summary: Connexion d'un utilisateur
+      description: Permet à un utilisateur de se connecter.
+      operationId: loginUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "JWT-Token"
+        '401':
+          description: Identifiants incorrects
+
+  /users/{userId}:
+    get:
+      summary: Récupérer les détails d'un utilisateur
+      description: Récupère les informations d'un utilisateur spécifique.
+      operationId: getUserDetails
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID de l'utilisateur
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Utilisateur trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  username:
+                    type: string
+                  email:
+                    type: string
+        '404':
+          description: Utilisateur non trouvé
+
+  /projects:
+    post:
+      summary: Créer un projet
+      description: Permet à un utilisateur de créer un projet qu'il souhaite financer ou promouvoir.
+      operationId: createProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - targetAmount
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                targetAmount:
+                  type: number
+                  format: float
+                userId:
+                  type: string
+      responses:
+        '201':
+          description: Projet créé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projectId:
+                    type: string
+                    example: "project123"
+        '400':
+          description: Données manquantes ou invalides
+
+  /projects/{projectId}:
+    get:
+      summary: Récupérer les détails d'un projet
+      description: Récupère les informations d'un projet spécifique.
+      operationId: getProjectDetails
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: ID du projet
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Détails du projet récupérés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projectId:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  targetAmount:
+                    type: number
+                    format: float
+                  raisedAmount:
+                    type: number
+                    format: float
+        '404':
+          description: Projet non trouvé
+
+  /projects/{projectId}/supporters:
+    post:
+      summary: Soutenir un projet
+      description: Permet à un utilisateur de soutenir un projet avec une contribution.
+      operationId: supportProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: ID du projet
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - amount
+              properties:
+                userId:
+                  type: string
+                amount:
+                  type: number
+                  format: float
+      responses:
+        '201':
+          description: Soutien apporté avec succès
+        '400':
+          description: Données invalides
+    get:
+      summary: Récupérer les personnes ayant soutenu un projet
+      description: Récupère la liste des utilisateurs ayant soutenu un projet.
+      operationId: getSupporters
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: ID du projet
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste des supporters récupérée
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    userId:
+                      type: string
+                    amount:
+                      type: number
+                      format: float
+  /projects/{projectId}/investments:
+    post:
+      summary: Investir dans un projet
+      description: Permet à un utilisateur d'investir une certaine somme dans un projet.
+      operationId: investInProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          description: ID du projet
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - amount
+              properties:
+                userId:
+                  type: string
+                amount:
+                  type: number
+                  format: float
+      responses:
+        '201':
+          description: Investissement effectué avec succès
+        '400':
+          description: Données invalides
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+
+    Project:
+      type: object
+      properties:
+        projectId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        targetAmount:
+          type: number
+          format: float
+        raisedAmount:
+          type: number
+          format: float
+        userId:
+          type: string
+
+    Investment:
+      type: object
+      properties:
+        userId:
+          type: string
+        amount:
+          type: number
+          format: float
+
+    Support:
+      type: object
+      properties:
+        userId:
+          type: string
+        amount:
+          type: number
+          format: float

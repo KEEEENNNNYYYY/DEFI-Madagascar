@@ -1,0 +1,1 @@
+CREATE DATABASE DEFI_Madagascar;
