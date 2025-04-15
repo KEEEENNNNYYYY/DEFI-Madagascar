@@ -3,12 +3,14 @@ const router = express.Router();
 const pool = require("../../../config/db");
 const deletePostQuery = require("../../query/postQuery/deletePostQuery");
 const cloudinary = require('cloudinary').v2;
+require("dotenv").config();
+
 
 // Config Cloudinary
 cloudinary.config({
-  cloud_name: "dyjrnhldt",
-  api_key: "144853594251148",
-  api_secret: "WjVHZOwFe5b0G6tzNufI_ASHaFo"
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 // DELETE /posts/:id
