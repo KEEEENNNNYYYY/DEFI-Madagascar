@@ -1,34 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../../../config/db');
-const createPostQuery = require('../../query/postQuery/createPostQuery');
 
 /**
  * Body attendu :
  * {
  *   "title": "Post 1",
  *   "description": "Contenu",
- *   "image_url": "https://picsum.photos/200",
- *   "firebase_uid": "uid_firebase"
+ *   "image_url": "https://res.cloudinary.com/...",
+ *   "public_id": "img_public_id_de_cloudinary",
+ *   "user_id": "uid_firebase"
  * }
  */
 router.post('/', async (req, res) => {
-    const { title, description, image_url, user_id } = req.body;
+    const { title, description, image_url, public_id, user_id } = req.body;
 
     // Vérifier si tous les champs sont envoyés
-    if (!title || !description || !image_url || !user_id) {
-        console.log("Champs manquants :", { title, description, image_url, user_id });
+    if (!title || !description || !image_url || !public_id || !user_id) {
+        console.log("Champs manquants :", { title, description, image_url, public_id, user_id });
         return res.status(400).json({ error: 'Champs requis manquants.' });
     }
 
     try {
         // Requête d'insertion dans la base de données
         const query = `
-            INSERT INTO post (title, description, image_url, user_id)
-            VALUES ($1, $2, $3, $4)
+            INSERT INTO post (title, description, image_url, public_id, user_id)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *
         `;
-        const values = [title, description, image_url, user_id];
+        const values = [title, description, image_url, public_id, user_id];
 
         console.log("Exécution de la requête avec les valeurs :", values);
 
@@ -40,6 +40,5 @@ router.post('/', async (req, res) => {
         res.status(500).json({ error: "Erreur lors de la création du post." });
     }
 });
-
 
 module.exports = router;

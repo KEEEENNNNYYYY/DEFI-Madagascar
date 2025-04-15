@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [postList, setPostList] = useState([]);
   const [pageInt, setPageInt] = useState(1);
+  const navigate = useNavigate(); // pour la navigation
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -11,7 +13,6 @@ const Dashboard = () => {
         const response = await axios.get(`http://localhost:5000/posts?page=${pageInt}&limit=10`);
         const newPosts = response.data.posts;
 
-        // Évite les doublons avec une Map
         setPostList(prev => {
           const allPosts = [...prev, ...newPosts];
           const unique = Array.from(new Map(allPosts.map(post => [post.id, post])).values());
@@ -29,8 +30,13 @@ const Dashboard = () => {
     setPageInt(prev => prev + 1);
   };
 
+  const handleDetails = (postId) => {
+    navigate(`/post/${postId}`);
+  };
+
   return (
     <div>
+       
       <h2>Dashboard</h2>
       <ul>
         {postList.map((post) => (
@@ -39,7 +45,7 @@ const Dashboard = () => {
             <h3>{post.title}</h3>
             <p>{post.description}</p>
             <p><small>Créé le : {new Date(post.created_at).toLocaleDateString()}</small></p>
-            <button>details</button>
+            <button onClick={() => handleDetails(post.id)}>details</button>
           </li>
         ))}
       </ul>

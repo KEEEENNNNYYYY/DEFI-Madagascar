@@ -20,6 +20,7 @@ const Navbar = () => {
       <Link to="/" style={styles.link}>Accueil</Link>
       <Link to="/dashboard" style={styles.link}>Dashboard</Link>
       <Link to="/posts" style={styles.link}>Créer un post</Link>
+      <Link to="/profile" style={styles.link}>profile</Link>
       {!user ? (
         <>
           <Link to="/login" style={styles.link}>Connexion</Link>
