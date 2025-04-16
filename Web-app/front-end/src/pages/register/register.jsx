@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 👈 Import du hook
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../utils/firebase";
 import axios from "axios";
 
 const Register = () => {
+    const navigate = useNavigate(); // 👈 Pour la redirection
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -26,27 +28,21 @@ const Register = () => {
 
             console.log("Utilisateur Firebase créé :", user);
 
-            // Étape 2 : Envoyer les données à ton backend Express avec axios
-            // const response = await axios.post("http://localhost:5000/users", {
-            //     id: user.uid, // <- ici on utilise "id" directement, car c’est la clé primaire maintenant
-            //     firstName,
-            //     lastName,
-            //     birthday,
-            //     email: user.email,
-            // });
+            // Étape 2 : Envoyer les infos au backend
             const response = await axios.post("http://localhost:5000/users", {
                 firstName,
                 lastName,
                 birthday,
                 email: user.email,
-                firebase_uid: user.uid, // Tu envoies l'uid Firebase à la place de "id"
+                firebase_uid: user.uid,
             });
-
-
-
 
             console.log("Réponse backend :", response.data);
             setSuccessMessage("Inscription réussie !");
+            
+            // ✅ Étape 3 : Redirection vers /dashboard
+            navigate("/dashboard");
+
         } catch (err) {
             console.error("Erreur :", err.response?.data || err.message);
             setError(err.response?.data?.error || err.message);
