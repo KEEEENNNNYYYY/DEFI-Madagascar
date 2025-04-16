@@ -1,38 +1,46 @@
 const express = require('express');
 const router = express.Router();
 const pool = require("../../../config/db");
+const deletePostQuery = require("../../query/postQuery/deletePostQuery");
 const cloudinary = require("../../../config/cloudinary");
+const verifyFirebaseToken = require("../../../config/firebase");
 
-// DELETE /posts/:id
-router.delete('/:id', async (req, res) => {
-  const postId = parseInt(req.params.id, 10);
+
+router.delete('/:id', verifyFirebaseToken, async (req, res) => {
+  const postId = parseInt(req.params.id);
+  const firebase_uid = req.firebase_uid;
 
   if (isNaN(postId)) {
     return res.status(400).json({ error: "ID invalide." });
   }
 
   try {
-    // 1. Récupérer le public_id de l'image à supprimer
-    const fetchPost = await pool.query("SELECT public_id FROM post WHERE id = $1", [postId]);
+    // Récupère le post avec son auteur
+    const fetchPost = await pool.query("SELECT public_id, user_id FROM post WHERE id = $1", [postId]);
 
     if (fetchPost.rowCount === 0) {
       return res.status(404).json({ error: "Post non trouvé." });
     }
 
-    const publicId = fetchPost.rows[0].public_id;
+    const { public_id, user_id } = fetchPost.rows[0];
 
-    // 2. Supprimer l'image de Cloudinary si elle existe
-    if (publicId) {
-      await cloudinary.uploader.destroy(publicId);
+    // Vérifie que le user_id correspond bien au firebase_uid
+    const userRes = await pool.query('SELECT id FROM "user" WHERE id = $1', [user_id]);
+
+
+    if (userRes.rowCount === 0 || userRes.rows[0].id !== firebase_uid) {
+      return res.status(403).json({ error: "Non autorisé à supprimer ce post." });
     }
 
-    // 3. Supprimer le post dans la base de données
-    await pool.query("DELETE FROM post WHERE id = $1", [postId]);
+    if (public_id) {
+      await cloudinary.uploader.destroy(public_id);
+    }
 
-    res.status(200).json({ message: "Post et image supprimés avec succès." });
+    await pool.query(deletePostQuery(postId));
+    res.status(200).json({ message: "Post supprimé avec succès." });
   } catch (err) {
     console.error("Erreur lors de la suppression :", err);
-    res.status(500).json({ error: "Erreur serveur lors de la suppression." });
+    res.status(500).json({ error: "Erreur serveur." });
   }
 });
 
