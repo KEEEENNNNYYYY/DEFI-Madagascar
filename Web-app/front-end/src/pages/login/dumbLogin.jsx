@@ -1,5 +1,5 @@
-// src/components/Login/dumbLogin.jsx
 import React from "react";
+import { Link } from "react-router-dom"; // 🧭 Import du Link
 
 const DumbLogin = ({
   email,
@@ -37,6 +37,14 @@ const DumbLogin = ({
 
       {error && <p className="error">{error}</p>}
       {successMessage && <p className="success">{successMessage}</p>}
+
+      {/* Lien vers la page d'inscription */}
+      <p style={{ marginTop: "1rem" }}>
+        Pas encore de compte ?{" "}
+        <Link to="/register" style={{ color: "#007bff", textDecoration: "underline" }}>
+          Inscris-toi ici
+        </Link>
+      </p>
     </div>
   );
 };
