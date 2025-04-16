@@ -1,28 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const pool = require("../../../config/db");
-const deletePostQuery = require("../../query/postQuery/deletePostQuery");
-const cloudinary = require('cloudinary').v2;
-require("dotenv").config();
-
-
-// Config Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
+const cloudinary = require("../../../config/cloudinary");
 
 // DELETE /posts/:id
 router.delete('/:id', async (req, res) => {
-  const postId = parseInt(req.params.id);
+  const postId = parseInt(req.params.id, 10);
 
   if (isNaN(postId)) {
     return res.status(400).json({ error: "ID invalide." });
   }
 
   try {
-    // 1. Récupérer le post pour avoir le public_id
+    // 1. Récupérer le public_id de l'image à supprimer
     const fetchPost = await pool.query("SELECT public_id FROM post WHERE id = $1", [postId]);
 
     if (fetchPost.rowCount === 0) {
@@ -31,14 +21,13 @@ router.delete('/:id', async (req, res) => {
 
     const publicId = fetchPost.rows[0].public_id;
 
-    // 2. Supprimer l'image de Cloudinary si public_id existe
+    // 2. Supprimer l'image de Cloudinary si elle existe
     if (publicId) {
       await cloudinary.uploader.destroy(publicId);
     }
 
-    // 3. Supprimer le post de la BDD
-    const query = deletePostQuery(postId);
-    await pool.query(query);
+    // 3. Supprimer le post dans la base de données
+    await pool.query("DELETE FROM post WHERE id = $1", [postId]);
 
     res.status(200).json({ message: "Post et image supprimés avec succès." });
   } catch (err) {
