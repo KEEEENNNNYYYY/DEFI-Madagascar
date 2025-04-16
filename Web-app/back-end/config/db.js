@@ -9,11 +9,14 @@ const pool = new Pool({
     password: process.env.DB_PASSWORD,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
-    database: process.env.DB_NAME,
-    ssl: {
-        rejectUnauthorized: false,
-        ca: fs.readFileSync('../ca.pem').toString(),
-      },
+    database: process.env.DB_NAME
+    /**
+     * uncommit on prod branch
+     */
+    // ssl: {
+    //     rejectUnauthorized: false,
+    //     ca: fs.readFileSync('../ca.pem').toString(),
+    //   },
 });
 
 module.exports = pool;
