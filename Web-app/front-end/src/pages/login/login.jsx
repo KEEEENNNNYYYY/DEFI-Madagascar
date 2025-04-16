@@ -1,13 +1,14 @@
+// src/components/Login/login.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // 🔥 Import du hook de redirection
+import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../utils/firebase";
+import DumbLogin from "./dumbLogin";
 
 const Login = () => {
-  const navigate = useNavigate(); // 🔥 Hook pour rediriger
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -23,7 +24,7 @@ const Login = () => {
       console.log("Utilisateur connecté :", user);
       if (user) {
         setSuccessMessage(`Bienvenue ${user.email}`);
-        navigate("/dashboard"); // ✅ Redirection
+        navigate("/dashboard");
       }
     } catch (err) {
       console.error("Erreur de connexion :", err.message);
@@ -32,32 +33,16 @@ const Login = () => {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto" }}>
-      <h2>Connexion</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Email :</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Mot de passe :</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Se connecter</button>
-      </form>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+    <div className="container">
+      <DumbLogin
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
+        error={error}
+        successMessage={successMessage}
+        handleLogin={handleLogin}
+      />
     </div>
   );
 };

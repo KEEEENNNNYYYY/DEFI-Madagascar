@@ -1,15 +1,16 @@
+// src/components/Profile/Profile.jsx
 import React, { useEffect, useState } from "react";
 import { auth } from "../../utils/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import DumbProfile from "./dumbProfile";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [postList, setPostList] = useState([]);
   const [pageInt, setPageInt] = useState(1);
 
-  // Champs utilisateur supplémentaires
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,7 +19,6 @@ const Profile = () => {
 
   const navigate = useNavigate();
 
-  // 🔐 Récupération de l'utilisateur Firebase connecté
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
@@ -27,13 +27,11 @@ const Profile = () => {
     return () => unsubscribe();
   }, []);
 
-  // 🔁 Récupération des posts + info user
   useEffect(() => {
     if (!user) return;
 
     const fetchData = async () => {
       try {
-        // ✅ Récupérer les posts
         const postRes = await axios.get(`http://localhost:5000/posts/user/${user.uid}?page=${pageInt}`);
         const newPosts = postRes.data.posts;
 
@@ -43,7 +41,6 @@ const Profile = () => {
           return unique;
         });
 
-        // ✅ Récupérer les infos utilisateur
         const userRes = await axios.get(`http://localhost:5000/user/${user.uid}`);
         const data = userRes.data;
 
@@ -80,32 +77,17 @@ const Profile = () => {
   if (!user) return <p>Chargement du profil...</p>;
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <h2>{firstName} {lastName}</h2>
-      <p><strong>ID :</strong> {userId}</p>
-      <p><strong>Email :</strong> {email}</p>
-      <p><strong>Anniversaire :</strong> {birthday}</p>
-
-      <h3>Mes publications :</h3>
-      <ul>
-        {postList.map((post) => (
-          <li key={post.id} style={{ borderBottom: "1px solid #ccc", marginBottom: "1rem", paddingBottom: "1rem" }}>
-            <img src={post.image_url} alt={post.title} style={{ width: "100px" }} />
-            <h3>{post.title}</h3>
-            <p>{post.description}</p>
-            <p><small>Créé le : {new Date(post.created_at).toLocaleDateString()}</small></p>
-            <div style={{ display: "flex", gap: "1rem" }}>
-              <button onClick={() => handleDetails(post.id)}>Détails</button>
-              <button onClick={() => handleDeletePost(post.id)} style={{ color: "red" }}>
-                Supprimer
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      {postList.length > 0 && <button onClick={handleClick}>Charger plus</button>}
-    </div>
+    <DumbProfile
+      firstName={firstName}
+      lastName={lastName}
+      userId={userId}
+      email={email}
+      birthday={birthday}
+      postList={postList}
+      handleDetails={handleDetails}
+      handleDeletePost={handleDeletePost}
+      handleClick={handleClick}
+    />
   );
 };
 
