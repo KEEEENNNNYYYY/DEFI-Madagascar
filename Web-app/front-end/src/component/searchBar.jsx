@@ -10,7 +10,7 @@ const SearchBar = () => {
     if (!searchValue.trim()) return;
 
     try {
-      const res = await axios.get(`http://localhost:5000/search?name=${searchValue}&page=${page}`);
+      const res = await axios.get(`https://defi-madagascar-1.onrender.com/search?name=${searchValue}&page=${page}`);
       setResults(res.data.results);
     } catch (err) {
       console.error("Erreur lors de la recherche :", err);

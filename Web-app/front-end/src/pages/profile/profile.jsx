@@ -34,7 +34,7 @@ const Profile = () => {
     const fetchData = async () => {
       try {
         // ✅ Récupérer les posts
-        const postRes = await axios.get(`http://localhost:5000/posts/user/${user.uid}?page=${pageInt}`);
+        const postRes = await axios.get(`https://defi-madagascar-1.onrender.com/posts/user/${user.uid}?page=${pageInt}`);
         const newPosts = postRes.data.posts;
 
         setPostList((prev) => {
@@ -44,7 +44,7 @@ const Profile = () => {
         });
 
         // ✅ Récupérer les infos utilisateur
-        const userRes = await axios.get(`http://localhost:5000/user/${user.uid}`);
+        const userRes = await axios.get(`https://defi-madagascar-1.onrender.com/user/${user.uid}`);
         const data = userRes.data;
 
         setFirstName(data.first_name);
@@ -66,7 +66,7 @@ const Profile = () => {
 
   const handleDeletePost = async (postId) => {
     try {
-      await axios.delete(`http://localhost:5000/posts/${postId}`);
+      await axios.delete(`https://defi-madagascar-1.onrender.com/posts/${postId}`);
       setPostList(prev => prev.filter(post => post.id !== postId));
     } catch (error) {
       console.error("Erreur lors de la suppression du post :", error);

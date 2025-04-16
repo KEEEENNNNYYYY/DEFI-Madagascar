@@ -80,7 +80,7 @@ const CreatePost = () => {
         }
 
         try {
-            await axios.post("http://localhost:5000/posts", {
+            await axios.post("https://defi-madagascar-1.onrender.com/posts", {
                 title,
                 description,
                 image_url: imageUrl,
