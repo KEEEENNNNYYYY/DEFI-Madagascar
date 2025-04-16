@@ -8,6 +8,7 @@ import Navbar from "./component/navbar";
 import Profile from "./pages/profile/profile";
 import PostDetail from "./pages/postDetails/postDetail";
 import SearchBar from "./component/searchBar";
+import SearchedProfile from "./pages/searchedProfil.jsx/searchedProfil";
 
 const App = () => {
   return (
@@ -27,8 +28,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/posts" element={<CreatePost />} />
-        <Route path="/profile" element={<Profile />} /> {/* connecté */}
-        <Route path="/user/:id" element={<Profile />} /> {/* profil public */}
+        <Route path="/profile" element={<Profile />} /> 
+        <Route path="/user/:id" element={<SearchedProfile />} />
         <Route path="/post/:post_id" element={<PostDetail />} />
       </Routes>
     </>
