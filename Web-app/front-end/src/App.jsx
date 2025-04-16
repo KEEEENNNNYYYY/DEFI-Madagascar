@@ -14,19 +14,21 @@ const App = () => {
     <>
       <Navbar />
       <Routes>
-
-        <Route path="/" element={
-          <>
-            <h1>Accueil</h1>
-            <SearchBar />
-          </>
-        } />
-
+        <Route
+          path="/"
+          element={
+            <>
+              <h1>Accueil</h1>
+              <SearchBar />
+            </>
+          }
+        />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/posts" element={<CreatePost />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<Profile />} /> {/* connecté */}
+        <Route path="/user/:id" element={<Profile />} /> {/* profil public */}
         <Route path="/post/:post_id" element={<PostDetail />} />
       </Routes>
     </>
