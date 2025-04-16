@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const SearchBar = () => {
@@ -7,6 +8,8 @@ const SearchBar = () => {
   const [page, setPage] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(null);
+
+  const navigate = useNavigate(); // 👉 Ajout ici
 
   const handleSearch = async (value = searchValue, currentPage = page) => {
     if (!value.trim()) {
@@ -30,11 +33,10 @@ const SearchBar = () => {
     setSearchValue(value);
     setPage(1);
 
-    // anti-spam : timeout avant appel API
     if (typingTimeout) clearTimeout(typingTimeout);
     const timeout = setTimeout(() => {
       handleSearch(value, 1);
-    }, 300); // délai de 300ms après l'arrêt de frappe
+    }, 300);
 
     setTypingTimeout(timeout);
   };
@@ -53,6 +55,11 @@ const SearchBar = () => {
     }
   };
 
+  // 👉 Redirection vers /user/:id
+  const handleClickUser = (id) => {
+    navigate(`/user/${id}`);
+  };
+
   return (
     <div style={{ maxWidth: "500px", margin: "0 auto", padding: "1rem", position: "relative" }}>
       <input
@@ -62,7 +69,7 @@ const SearchBar = () => {
         onChange={handleInputChange}
         style={{ width: "100%", padding: "8px", marginBottom: "1rem" }}
         onFocus={() => searchValue && setShowPreview(true)}
-        onBlur={() => setTimeout(() => setShowPreview(false), 200)} // petit délai pour laisser l'utilisateur cliquer
+        onBlur={() => setTimeout(() => setShowPreview(false), 200)}
       />
 
       {/* Résultats preview */}
@@ -82,7 +89,15 @@ const SearchBar = () => {
           padding: "0.5rem"
         }}>
           {results.map(user => (
-            <div key={user.id} style={{ padding: "8px", borderBottom: "1px solid #eee" }}>
+            <div
+              key={user.id}
+              onClick={() => handleClickUser(user.id)} // 👉 Clique pour redirection
+              style={{
+                padding: "8px",
+                borderBottom: "1px solid #eee",
+                cursor: "pointer"
+              }}
+            >
               <strong>{user.first_name} {user.last_name}</strong><br />
               <small>{user.email}</small>
             </div>
@@ -90,7 +105,7 @@ const SearchBar = () => {
         </div>
       )}
 
-      {/* Si aucun résultat trouvé */}
+      {/* Aucun résultat */}
       {showPreview && searchValue && results.length === 0 && (
         <div style={{
           position: "absolute",
@@ -107,7 +122,7 @@ const SearchBar = () => {
         </div>
       )}
 
-      {/* Navigation manuelle (optionnelle) */}
+      {/* Pagination */}
       {results.length > 0 && (
         <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
           <button disabled={page <= 1} onClick={handlePrevPage}>⬅ Précédent</button>
