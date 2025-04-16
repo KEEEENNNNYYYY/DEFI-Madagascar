@@ -1,5 +1,5 @@
+// src/components/Register/dumbRegister.jsx
 import React from "react";
-import { Link } from "react-router-dom"; // 🧭 Import du Link
 
 const DumbRegister = ({
     firstName,
@@ -20,7 +20,6 @@ const DumbRegister = ({
         <div>
             <h2>Inscription</h2>
             <form onSubmit={handleSubmit}>
-                {/* Inputs */}
                 <div>
                     <label>Prénom :</label>
                     <input
@@ -66,20 +65,11 @@ const DumbRegister = ({
                         required
                     />
                 </div>
-
                 <button type="submit">S'inscrire</button>
             </form>
 
-            {error && <p className="error">{error}</p>}
-            {successMessage && <p className="success">{successMessage}</p>}
-
-            {/* Lien vers la page de login */}
-            <p style={{ marginTop: "1rem" }}>
-                 Déjà un compte ?{" "}
-                <Link to="/login" style={{ color: "#007bff", textDecoration: "underline" }}>
-                    Click here
-                </Link>
-            </p>
+            {error && <p className="error">{error}</p>} {/* Utilisation de la classe error */}
+            {successMessage && <p className="success">{successMessage}</p>} {/* Utilisation de la classe success */}
         </div>
     );
 };
