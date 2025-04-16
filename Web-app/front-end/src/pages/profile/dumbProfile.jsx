@@ -1,4 +1,3 @@
-// src/components/Profile/DumbProfile.jsx
 import React from "react";
 
 const DumbProfile = ({
