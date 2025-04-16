@@ -9,7 +9,7 @@ const PostDetail = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`https://defi-madagascar-1.onrender.com/posts/${post_id}`);
+        const response = await axios.get(`http://localhost:5000/posts/${post_id}`);
         setPost(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération du post :", error);

@@ -10,7 +10,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`https://defi-madagascar-1.onrender.com/posts?page=${pageInt}&limit=10`);
+        const response = await axios.get(`http://localhost:5000/posts?page=${pageInt}&limit=10`);
         const newPosts = response.data.posts;
 
         setPostList(prev => {

@@ -27,14 +27,14 @@ const Register = () => {
             console.log("Utilisateur Firebase créé :", user);
 
             // Étape 2 : Envoyer les données à ton backend Express avec axios
-            // const response = await axios.post("https://defi-madagascar-1.onrender.com/users", {
+            // const response = await axios.post("http://localhost:5000/users", {
             //     id: user.uid, // <- ici on utilise "id" directement, car c’est la clé primaire maintenant
             //     firstName,
             //     lastName,
             //     birthday,
             //     email: user.email,
             // });
-            const response = await axios.post("https://defi-madagascar-1.onrender.com/users", {
+            const response = await axios.post("http://localhost:5000/users", {
                 firstName,
                 lastName,
                 birthday,
