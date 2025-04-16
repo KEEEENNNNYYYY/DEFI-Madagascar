@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // 🔥 Import du hook de redirection
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../utils/firebase";
 
 const Login = () => {
+  const navigate = useNavigate(); // 🔥 Hook pour rediriger
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,9 +21,10 @@ const Login = () => {
       const user = userCredential.user;
 
       console.log("Utilisateur connecté :", user);
-
-      setSuccessMessage(`Bienvenue ${user.email}`);
-      // Tu peux ici stocker le user dans un context global si tu veux (AuthContext, Redux, etc.)
+      if (user) {
+        setSuccessMessage(`Bienvenue ${user.email}`);
+        navigate("/dashboard"); // ✅ Redirection
+      }
     } catch (err) {
       console.error("Erreur de connexion :", err.message);
       setError("Email ou mot de passe incorrect.");
