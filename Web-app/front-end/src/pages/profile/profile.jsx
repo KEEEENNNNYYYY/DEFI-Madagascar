@@ -38,7 +38,7 @@ const Profile = () => {
         setPostList([]);
 
         // Récupère infos utilisateur via son firebase_uid
-        const userRes = await axios.get(`http://localhost:5000/user/${user.uid}`);
+        const userRes = await axios.get(`https://defi-madagascar-1.onrender.com/user/${user.uid}`);
         const data = userRes.data;
 
         setFirstName(data.first_name);
@@ -50,7 +50,7 @@ const Profile = () => {
         console.log("Profil connecté :", user.uid, "| User ID DB:", data.id);
 
         // Récupère ses publications
-        const postRes = await axios.get(`http://localhost:5000/posts/user/${data.id}?page=${pageInt}`);
+        const postRes = await axios.get(`https://defi-madagascar-1.onrender.com/posts/user/${data.id}?page=${pageInt}`);
         setPostList(postRes.data.posts);
 
       } catch (error) {
@@ -68,7 +68,7 @@ const Profile = () => {
   const handleDeletePost = async (postId) => {
     try {
       const token = await user.getIdToken();
-      const res = await axios.delete(`http://localhost:5000/posts/${postId}`, {
+      const res = await axios.delete(`https://defi-madagascar-1.onrender.com/posts/${postId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

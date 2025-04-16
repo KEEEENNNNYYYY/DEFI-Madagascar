@@ -26,7 +26,7 @@ const SearchedProfile = () => {
         setPostList([]);
 
         // 🔹 Récupération des infos de l'utilisateur visité
-        const userRes = await axios.get(`http://localhost:5000/user/${id}`);
+        const userRes = await axios.get(`https://defi-madagascar-1.onrender.com/user/${id}`);
         const data = userRes.data;
 
         setFirstName(data.first_name);
@@ -36,7 +36,7 @@ const SearchedProfile = () => {
         setUserId(data.id);
 
         // 🔹 Récupération des posts de cet utilisateur
-        const postRes = await axios.get(`http://localhost:5000/posts/user/${data.id}?page=${pageInt}`);
+        const postRes = await axios.get(`https://defi-madagascar-1.onrender.com/posts/user/${data.id}?page=${pageInt}`);
         setPostList(postRes.data.posts);
 
         console.log("Profil visité :", data.first_name, data.last_name);

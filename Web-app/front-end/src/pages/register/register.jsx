@@ -28,7 +28,7 @@ const Register = () => {
 
             console.log("Utilisateur Firebase créé :", user);
 
-            const response = await axios.post("http://localhost:5000/users", {
+            const response = await axios.post("https://defi-madagascar-1.onrender.com/users", {
                 firstName,
                 lastName,
                 birthday,
