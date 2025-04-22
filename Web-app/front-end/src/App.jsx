@@ -9,6 +9,8 @@ import Profile from "./pages/profile/profile";
 import PostDetail from "./pages/postDetails/postDetail";
 import SearchBar from "./component/searchBar";
 import SearchedProfile from "./pages/searchedProfil.jsx/searchedProfil";
+import Chat from "./pages/message/chat/chat";
+import MessageList from "./pages/message/messageList";
 
 const App = () => {
   return (
@@ -31,6 +33,8 @@ const App = () => {
         <Route path="/profile" element={<Profile />} /> 
         <Route path="/user/:id" element={<SearchedProfile />} />
         <Route path="/post/:post_id" element={<PostDetail />} />
+        <Route path="/messages" element={<MessageList />} />
+        <Route path="/chat/:userId" element={<Chat />} />
       </Routes>
     </>
   );
