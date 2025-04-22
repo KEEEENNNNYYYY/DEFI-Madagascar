@@ -1,0 +1,10 @@
+CREATE TABLE message (
+    id TEXT PRIMARY KEY,
+    sender_id TEXT NOT NULL,
+    receiver_id TEXT NOT NULL,
+    content TEXT NOT NULL,
+    sent_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_sender FOREIGN KEY (sender_id) REFERENCES "user"(id) ON DELETE CASCADE,
+    CONSTRAINT fk_receiver FOREIGN KEY (receiver_id) REFERENCES "user"(id) ON DELETE CASCADE
+);
