@@ -19,7 +19,7 @@ const Chat = () => {
 
     try {
       setSending(true);
-      await axios.post("http://localhost:5000/message", {
+      await axios.post("https://defi-madagascar-1.onrender.com/message", {
         senderId: user1,
         receiverId: userId,
         content: newMessage,
@@ -60,7 +60,7 @@ const Chat = () => {
       if (!user1) return;
 
       try {
-        const response = await axios.get(`http://localhost:5000/message?user1=${user1}&user2=${userId}`);
+        const response = await axios.get(`https://defi-madagascar-1.onrender.com/message?user1=${user1}&user2=${userId}`);
         setMessages(response.data);
         setLoading(false);
       } catch (error) {

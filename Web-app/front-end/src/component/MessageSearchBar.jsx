@@ -18,7 +18,7 @@ const MessageSearchBar = () => {
     }
 
     try {
-      const res = await axios.get(`http://localhost:5000/search?name=${value}&page=${currentPage}`);
+      const res = await axios.get(`https://defi-madagascar-1.onrender.com/search?name=${value}&page=${currentPage}`);
       setResults(res.data.results || []);
       setShowPreview(true);
     } catch (err) {

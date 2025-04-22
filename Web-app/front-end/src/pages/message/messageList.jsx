@@ -30,7 +30,7 @@ const MessageList = () => {
             if (!userId) return;
 
             try {
-                const res = await axios.get(`http://localhost:5000/chat?user=${userId}`);
+                const res = await axios.get(`https://defi-madagascar-1.onrender.com/chat?user=${userId}`);
                 setConversations(res.data);
                 setLoading(false);
             } catch (err) {
