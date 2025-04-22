@@ -1,5 +1,12 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("./defi-madagascar-firebase-adminsdk-fbsvc-25f07d21ba.json");
+/**
+ * production url
+ */
+//const serviceAccount = require("./defi-madagascar-firebase-adminsdk-fbsvc-25f07d21ba.json");
+/**
+ * dev url
+*/
+const serviceAccount = require("../defi-madagascar-firebase-adminsdk-fbsvc-25f07d21ba.json");
 
 if (!admin.apps.length) {
   admin.initializeApp({
