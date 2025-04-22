@@ -46,14 +46,26 @@ const Chat = () => {
 
   // Réception de message en temps réel
   useEffect(() => {
-    socket.on("receiveMessage", (message) => {
-      setMessages((prev) => [...prev, message]);
-    });
-
-    return () => {
-      socket.off("receiveMessage");
+    const handleReceiveMessage = (message) => {
+      // On ne garde que les messages destinés à cette conversation
+      if (
+        (message.sender_id === userId && message.receiver_id === user1) ||
+        (message.sender_id === user1 && message.receiver_id === userId)
+      ) {
+        setMessages((prev) => [...prev, message]);
+      } else {
+        // Optionnel : tu peux déclencher une notification pour un autre chat ici
+        console.log("📨 Nouveau message d'un autre utilisateur ignoré dans cette vue");
+      }
     };
-  }, []);
+  
+    socket.on("receiveMessage", handleReceiveMessage);
+  
+    return () => {
+      socket.off("receiveMessage", handleReceiveMessage);
+    };
+  }, [user1, userId]);
+  
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
