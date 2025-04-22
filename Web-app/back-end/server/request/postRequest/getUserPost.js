@@ -4,7 +4,7 @@ const pool = require("../../../config/db");
 const getUserPostQuery = require("../../query/postQuery/getUserPostQuery");
 
 /**
- * Exemple : GET http://localhost:5000/posts/user/PZWY7Wb1o8WmFW7v9jX7vE6gtOt1?page=2
+ * Exemple : GET https://defi-madagascar-1.onrender.com/posts/user/PZWY7Wb1o8WmFW7v9jX7vE6gtOt1?page=2
  */
 router.get('/:user_id', async (req, res) => {
   const { user_id } = req.params;

@@ -5,7 +5,7 @@ const getDiscussionQuery = require('../../query/messageQuery/getDiscussionQuery'
 
 /**
  * Exemple :
- * GET http://localhost:5000/messages?user1=Il7A4...&user2=OhQrzg...
+ * GET https://defi-madagascar-1.onrender.com/messages?user1=Il7A4...&user2=OhQrzg...
 */
 router.get('/', async (req, res) => {
   const { user1, user2 } = req.query;

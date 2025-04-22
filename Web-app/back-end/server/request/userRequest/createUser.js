@@ -5,7 +5,7 @@ const createUserQuery = require('../../query/userQuery/createUserQuery');
 
 /**
  * Exemple de requête POST :
- * http://localhost:5000/users
+ * https://defi-madagascar-1.onrender.com/users
  * Body :
  * {
  *   "firstName": "Tahina",

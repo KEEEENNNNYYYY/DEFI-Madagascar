@@ -4,7 +4,7 @@ const pool = require("../../../config/db");
 const getPostById = require("../../query/postQuery/getPostByIdQuery"); // chemin corrigé
 
 /**
- * Exemple : GET http://localhost:5000/post/1
+ * Exemple : GET https://defi-madagascar-1.onrender.com/post/1
  */
 router.get('/:post_id', async (req, res) => {
   const { post_id } = req.params;

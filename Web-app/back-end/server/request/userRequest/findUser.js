@@ -4,7 +4,7 @@ const pool = require("../../../config/db");
 const findUserQuery = require("../../query/userQuery/findUserQuery");
 
 /**
- * example : http://localhost:5000/search?name=an&page=1
+ * example : https://defi-madagascar-1.onrender.com/search?name=an&page=1
 */
 
 router.get('/', async (req, res) => {

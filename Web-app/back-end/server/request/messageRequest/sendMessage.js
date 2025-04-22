@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 
 /**
  * Exemple de requête POST :
- * http://localhost:5000/messages
+ * https://defi-madagascar-1.onrender.com/messages
  * Body :
  * {
  *   "senderId": "Il7A4sHb63YroLcUSDkkI8YGEXJ3",

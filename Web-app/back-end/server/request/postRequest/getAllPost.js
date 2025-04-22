@@ -5,7 +5,7 @@ const pool = require("../../../config/db");
 const getAllPostQuery = require("../../query/postQuery/getAllPostQuery");
 
 /**
- * Exemple : GET http://localhost:5000/posts?page=1&limit=10
+ * Exemple : GET https://defi-madagascar-1.onrender.com/posts?page=1&limit=10
  */
 router.get('/', async (req, res) => {
     const page = parseInt(req.query.page) || 1;

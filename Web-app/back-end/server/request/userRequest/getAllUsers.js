@@ -4,7 +4,7 @@ const pool = require("../../../config/db");
 const getAllUserQuery = require("../../query/userQuery/getAllUserQuery");
 
 /**
- * exemple : GET http://localhost:5000/users?page=3
+ * exemple : GET https://defi-madagascar-1.onrender.com/users?page=3
 */
 
 router.get('/', async (req, res) => {

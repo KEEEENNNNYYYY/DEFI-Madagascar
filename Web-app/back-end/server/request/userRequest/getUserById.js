@@ -4,7 +4,7 @@ const pool = require("../../../config/db");
 const getUserByIdQuery = require("../../query/userQuery/getUserByIdQuery"); // chemin corrigé
 
 /**
- * Exemple : GET http://localhost:5000/user/PZWY7Wb1o8WmFW7v9jX7vE6gtOt1
+ * Exemple : GET https://defi-madagascar-1.onrender.com/user/PZWY7Wb1o8WmFW7v9jX7vE6gtOt1
  */
 router.get('/:user_id', async (req, res) => {
   const { user_id } = req.params;

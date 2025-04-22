@@ -12,11 +12,11 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     /**
      * uncommit on prod branch
-     */
+    */
     ssl: {
         rejectUnauthorized: false,
         ca: fs.readFileSync('../ca.pem').toString(),
-      }
+    }
 });
 
 module.exports = pool;
