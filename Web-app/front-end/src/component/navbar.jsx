@@ -21,6 +21,8 @@ const Navbar = () => {
       <Link to="/dashboard" style={styles.link}>Dashboard</Link>
       <Link to="/posts" style={styles.link}>Créer un post</Link>
       <Link to="/profile" style={styles.link}>profile</Link>
+      <Link to="/messages" style={styles.link}>discussion</Link>
+      {/* <Link to="/chat/all" style={styles.link}>chat/all</Link> */}
       {!user ? (
         <>
           <Link to="/login" style={styles.link}>Connexion</Link>
