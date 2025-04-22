@@ -3,58 +3,30 @@ import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../../utils/firebase';
 import { useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
+const socket = io("https://defi-madagascar-1.onrender.com");
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user1, setUser1] = useState(null); // utilisateur connecté
+  const [user1, setUser1] = useState(null);
   const { userId } = useParams();
-  // Ajoute ces states en haut :
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
-
-    try {
-      setSending(true);
-      await axios.post("https://defi-madagascar-1.onrender.com/message", {
-        senderId: user1,
-        receiverId: userId,
-        content: newMessage,
-      });
-
-      setMessages(prev => [...prev, {
-        id: Date.now(),
-        sender_id: user1,
-        content: newMessage,
-        sent_at: new Date().toISOString()
-      }]);
-      setNewMessage("");
-    } catch (err) {
-      console.error("Erreur lors de l'envoi du message :", err);
-    } finally {
-      setSending(false);
-    }
-  };
-  // userId = destinataire
-
-
-  // Authentifie l'utilisateur Firebase
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       if (u) {
         setUser1(u.uid);
-      } else {
-        console.warn('Aucun utilisateur connecté');
+        socket.emit("userConnected", u.uid);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Récupération des messages quand l'utilisateur est connecté
+  // Récupère les messages
   useEffect(() => {
     const fetchMessages = async () => {
       if (!user1) return;
@@ -72,6 +44,52 @@ const Chat = () => {
     fetchMessages();
   }, [user1, userId]);
 
+  // Réception de message en temps réel
+  useEffect(() => {
+    socket.on("receiveMessage", (message) => {
+      setMessages((prev) => [...prev, message]);
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
+
+    try {
+      setSending(true);
+      await axios.post("https://defi-madagascar-1.onrender.com/message", {
+        senderId: user1,
+        receiverId: userId,
+        content: newMessage,
+      });
+
+      const messageData = {
+        id: Date.now(),
+        sender_id: user1,
+        content: newMessage,
+        sent_at: new Date().toISOString()
+      };
+
+      setMessages((prev) => [...prev, messageData]);
+
+      // Envoie via Socket.io
+      socket.emit("sendMessage", {
+        senderId: user1,
+        receiverId: userId,
+        content: newMessage
+      });
+
+      setNewMessage("");
+    } catch (err) {
+      console.error("Erreur lors de l'envoi du message :", err);
+    } finally {
+      setSending(false);
+    }
+  };
+
   if (!user1) return <p>Connexion en cours...</p>;
   if (loading) return <p>Chargement des messages...</p>;
 
@@ -80,8 +98,8 @@ const Chat = () => {
       <h2>Conversation</h2>
       <h1>Chat entre {user1} et {userId}</h1>
       <ul>
-        {messages.map((msg) => (
-          <li key={msg.id}>
+        {messages.map((msg, index) => (
+          <li key={index}>
             <strong>{msg.sender_id === user1 ? 'Moi' : 'Lui'}:</strong> {msg.content}
             <br />
             <small>{new Date(msg.sent_at).toLocaleString()}</small>
@@ -100,7 +118,6 @@ const Chat = () => {
           Envoyer
         </button>
       </div>
-
     </div>
   );
 };
