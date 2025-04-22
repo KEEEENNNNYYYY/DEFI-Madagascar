@@ -26,23 +26,31 @@ const Chat = () => {
     return () => unsubscribe();
   }, []);
 
-  // Récupère les messages
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (!user1) return;
-
-      try {
-        const response = await axios.get(`https://defi-madagascar-1.onrender.com/message?user1=${user1}&user2=${userId}`);
-        setMessages(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Erreur lors du chargement des messages:', error);
-        setLoading(false);
+    if (!user1 || !userId) return; // ne fait rien si l'un des deux est null
+  
+    const handleReceiveMessage = (message) => {
+      console.log("📩 Reçu:", message);
+      console.log("🧍 user1:", user1, " | 📬 userId (dans l'URL):", userId);
+  
+      if (
+        (message.sender_id === userId && message.receiver_id === user1) ||
+        (message.sender_id === user1 && message.receiver_id === userId)
+      ) {
+        console.log("✅ Message accepté pour cette conversation");
+        setMessages((prev) => [...prev, message]);
+      } else {
+        console.log("📨 Nouveau message d'un autre utilisateur ignoré dans cette vue");
       }
     };
-
-    fetchMessages();
+  
+    socket.on("receiveMessage", handleReceiveMessage);
+  
+    return () => {
+      socket.off("receiveMessage", handleReceiveMessage);
+    };
   }, [user1, userId]);
+  
 
   // Réception de message en temps réel
   useEffect(() => {
