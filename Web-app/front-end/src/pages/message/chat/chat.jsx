@@ -15,6 +15,7 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
 
+  // Récupération de l'utilisateur connecté
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       if (u) {
@@ -26,60 +27,51 @@ const Chat = () => {
     return () => unsubscribe();
   }, []);
 
+  // Récupération des messages de la conversation
   useEffect(() => {
-    if (!user1 || !userId) return; // ne fait rien si l'un des deux est null
-  
-    const handleReceiveMessage = (message) => {
-      console.log("📩 Reçu:", message);
-      console.log("🧍 user1:", user1, " | 📬 userId (dans l'URL):", userId);
-  
-      if (
-        (message.sender_id === userId && message.receiver_id === user1) ||
-        (message.sender_id === user1 && message.receiver_id === userId)
-      ) {
-        console.log("✅ Message accepté pour cette conversation");
-        setMessages((prev) => [...prev, message]);
-      } else {
-        console.log("📨 Nouveau message d'un autre utilisateur ignoré dans cette vue");
+    if (!user1 || !userId) return;
+
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get(`https://defi-madagascar-1.onrender.com/message?user1=${user1}&user2=${userId}`);
+        setMessages(response.data);
+      } catch (error) {
+        console.error('Erreur lors du chargement des messages:', error);
+      } finally {
+        setLoading(false);
       }
     };
-  
-    socket.on("receiveMessage", handleReceiveMessage);
-  
-    return () => {
-      socket.off("receiveMessage", handleReceiveMessage);
-    };
-  }, [user1, userId]);
-  
 
-  // Réception de message en temps réel
+    fetchMessages();
+  }, [user1, userId]);
+
+  // Réception des messages en temps réel
   useEffect(() => {
     const handleReceiveMessage = (message) => {
-      // On ne garde que les messages destinés à cette conversation
       if (
         (message.sender_id === userId && message.receiver_id === user1) ||
         (message.sender_id === user1 && message.receiver_id === userId)
       ) {
         setMessages((prev) => [...prev, message]);
       } else {
-        // Optionnel : tu peux déclencher une notification pour un autre chat ici
         console.log("📨 Nouveau message d'un autre utilisateur ignoré dans cette vue");
       }
     };
-  
+
     socket.on("receiveMessage", handleReceiveMessage);
-  
+
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
     };
   }, [user1, userId]);
-  
 
+  // Envoi d'un message
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
     try {
       setSending(true);
+
       await axios.post("https://defi-madagascar-1.onrender.com/message", {
         senderId: user1,
         receiverId: userId,
@@ -89,17 +81,17 @@ const Chat = () => {
       const messageData = {
         id: Date.now(),
         sender_id: user1,
+        receiver_id: userId,
         content: newMessage,
-        sent_at: new Date().toISOString()
+        sent_at: new Date().toISOString(),
       };
 
       setMessages((prev) => [...prev, messageData]);
 
-      // Envoie via Socket.io
       socket.emit("sendMessage", {
         senderId: user1,
         receiverId: userId,
-        content: newMessage
+        content: newMessage,
       });
 
       setNewMessage("");
@@ -110,8 +102,8 @@ const Chat = () => {
     }
   };
 
-  if (!user1) return <p>Connexion en cours...</p>;
-  if (loading) return <p>Chargement des messages...</p>;
+  // Affichage en cours de connexion ou chargement
+  if (!user1 || loading) return <p>Chargement en cours...</p>;
 
   return (
     <div>
@@ -134,7 +126,11 @@ const Chat = () => {
           placeholder="Écris ton message..."
           style={{ width: "80%", padding: "8px" }}
         />
-        <button onClick={handleSendMessage} disabled={sending || !newMessage.trim()} style={{ padding: "8px" }}>
+        <button
+          onClick={handleSendMessage}
+          disabled={sending || !newMessage.trim()}
+          style={{ padding: "8px" }}
+        >
           Envoyer
         </button>
       </div>
