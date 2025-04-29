@@ -8,51 +8,38 @@ const socketIo = require("socket.io");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const server = http.createServer(app); 
+const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
         origin: "*", // À sécuriser en prod
         methods: ["GET", "POST"]
     }
+}); 
+io.on('connection', (socket) => {
+    console.log("🟢 Un utilisateur s'est connecté");
+
+    socket.on("userConnected", (userId) => {
+        console.log(`👤 Utilisateur connecté avec l'ID: ${userId}`);
+        socket.userId = userId; // On stocke l’ID de l’utilisateur dans le socket
+    });
+
+    socket.on("sendMessage", (message) => {
+        console.log("📨 Nouveau message :", message);
+
+        // Diffuser à tous les clients sauf l'expéditeur
+        socket.broadcast.emit("receiveMessage", message);
+    });
+
+    socket.on("disconnect", () => {
+        console.log("🔴 Un utilisateur s'est déconnecté");
+    });
 });
+
 
 app.use(cors());
 app.use(express.json());
 
-// Garde une référence globale aux sockets
-let onlineUsers = new Map();
 
-io.on("connection", (socket) => {
-    console.log("✅ Nouveau client connecté : ", socket.id);
-
-    // Réception de l'utilisateur connecté
-    socket.on("userConnected", (userId) => {
-        onlineUsers.set(userId, socket.id);
-        console.log(`👤 ${userId} est en ligne`);
-    });
-
-    // Envoie un message à l'autre utilisateur si connecté
-    socket.on("sendMessage", ({ senderId, receiverId, content }) => {
-        const receiverSocketId = onlineUsers.get(receiverId);
-        if (receiverSocketId) {
-            io.to(receiverSocketId).emit("receiveMessage", {
-                sender_id: senderId,
-                content,
-                sent_at: new Date().toISOString()
-            });
-        }
-    });
-
-    socket.on("disconnect", () => {
-        console.log("❌ Client déconnecté :", socket.id);
-        for (let [userId, socketId] of onlineUsers.entries()) {
-            if (socketId === socket.id) {
-                onlineUsers.delete(userId);
-                break;
-            }
-        }
-    });
-});
 
 // Routes
 const getAllUsers = require('./request/userRequest/getAllUsers');
@@ -79,8 +66,8 @@ app.use('/search', findUser);
 app.use('/user', getUserById);
 app.use('/users', createUser);
 
-app.use('/posts/user', getUserPosts); 
-app.use('/posts', getPostById); 
+app.use('/posts/user', getUserPosts);
+app.use('/posts', getPostById);
 app.use('/posts', getAllPost);
 app.use('/posts', createPost);
 app.use('/posts', deletePost);

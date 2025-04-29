@@ -65,19 +65,18 @@ const Chat = () => {
     };
   }, [user1, userId]);
 
-  // Envoi d'un message
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
-
+  
     try {
       setSending(true);
-
+  
       await axios.post("https://defi-madagascar-1.onrender.com/message", {
         senderId: user1,
         receiverId: userId,
         content: newMessage,
       });
-
+  
       const messageData = {
         id: Date.now(),
         sender_id: user1,
@@ -85,15 +84,10 @@ const Chat = () => {
         content: newMessage,
         sent_at: new Date().toISOString(),
       };
-
+  
+      socket.emit("sendMessage", messageData); // ✅ après la déclaration
+  
       setMessages((prev) => [...prev, messageData]);
-
-      socket.emit("sendMessage", {
-        senderId: user1,
-        receiverId: userId,
-        content: newMessage,
-      });
-
       setNewMessage("");
     } catch (err) {
       console.error("Erreur lors de l'envoi du message :", err);
@@ -101,6 +95,7 @@ const Chat = () => {
       setSending(false);
     }
   };
+  
 
   // Affichage en cours de connexion ou chargement
   if (!user1 || loading) return <p>Chargement en cours...</p>;
