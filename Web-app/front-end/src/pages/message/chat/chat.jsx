@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -67,16 +68,16 @@ const Chat = () => {
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
-  
+
     try {
       setSending(true);
-  
+
       await axios.post("https://defi-madagascar-1.onrender.com/message", {
         senderId: user1,
         receiverId: userId,
         content: newMessage,
       });
-  
+
       const messageData = {
         id: Date.now(),
         sender_id: user1,
@@ -84,9 +85,9 @@ const Chat = () => {
         content: newMessage,
         sent_at: new Date().toISOString(),
       };
-  
+
       socket.emit("sendMessage", messageData); // ✅ après la déclaration
-  
+
       setMessages((prev) => [...prev, messageData]);
       setNewMessage("");
     } catch (err) {
@@ -95,7 +96,7 @@ const Chat = () => {
       setSending(false);
     }
   };
-  
+
 
   // Affichage en cours de connexion ou chargement
   if (!user1 || loading) return <p>Chargement en cours...</p>;
