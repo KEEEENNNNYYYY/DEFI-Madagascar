@@ -4,6 +4,5 @@ const deletePostQuery = (post_id) => {
       values: [post_id]
     };
   };
-  
+
   module.exports = deletePostQuery;
-  
