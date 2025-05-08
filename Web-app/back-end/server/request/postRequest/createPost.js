@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../../../config/db');
+const postImageQuery = require('../../query/postQuery/postImageQuery');
 
 /**
  * Body attendu :
@@ -22,17 +23,11 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        // Requête d'insertion dans la base de données
-        const query = `
-            INSERT INTO post (title, description, image_url, public_id, user_id)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING *
-        `;
-        const values = [title, description, image_url, public_id, user_id];
+        const query = postImageQuery({ title, description, image_url, public_id, user_id });
 
-        console.log("Exécution de la requête avec les valeurs :", values);
+        console.log("Exécution de la requête avec les valeurs :", query.values);
 
-        const result = await pool.query(query, values);
+        const result = await pool.query(query.text, query.values);
 
         res.status(201).json(result.rows[0]);
     } catch (err) {
