@@ -1,275 +1,249 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: API de Réseau Social pour Soutien aux Projets
-  description: API pour permettre aux utilisateurs de publier des projets, soutenir ou investir dans les projets des autres.
+  title: API Defi Madagascar
   version: 1.0.0
-
+  description: API REST pour gérer les utilisateurs, les posts et les messages.
 servers:
-  - url: http://localhost:3000/
-    description: Serveur local de développement
+  - url: http://localhost:5000
+
+tags:
+  - name: Users
+    description: Gestion des utilisateurs
+  - name: Posts
+    description: Gestion des posts
+  - name: Messages
+    description: Gestion des messages privés
+  - name: Search
+    description: Recherche d’utilisateurs
 
 paths:
-  /auth/register:
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Récupérer tous les utilisateurs
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: Liste des utilisateurs
     post:
-      summary: Inscription d'un utilisateur
-      description: Permet à un nouvel utilisateur de s'inscrire.
-      operationId: registerUser
+      tags:
+        - Users
+      summary: Créer un nouvel utilisateur
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - username
-                - email
-                - password
               properties:
-                username:
+                firstName:
                   type: string
+                lastName:
+                  type: string
+                birthday:
+                  type: string
+                  format: date
                 email:
                   type: string
-                  format: email
-                password:
+                firebase_uid:
                   type: string
-                  format: password
       responses:
         '201':
-          description: Utilisateur créé avec succès
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Utilisateur créé avec succès"
-        '400':
-          description: Données manquantes ou invalides
-          
-  /auth/login:
-    post:
-      summary: Connexion d'un utilisateur
-      description: Permet à un utilisateur de se connecter.
-      operationId: loginUser
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - email
-                - password
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-                  format: password
-      responses:
-        '200':
-          description: Connexion réussie
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    example: "JWT-Token"
-        '401':
-          description: Identifiants incorrects
+          description: Utilisateur créé
 
-  /users/{userId}:
+  /search:
     get:
-      summary: Récupérer les détails d'un utilisateur
-      description: Récupère les informations d'un utilisateur spécifique.
-      operationId: getUserDetails
+      tags:
+        - Search
+      summary: Rechercher un utilisateur
       parameters:
-        - name: userId
-          in: path
-          required: true
-          description: ID de l'utilisateur
+        - in: query
+          name: name
           schema:
             type: string
+          required: true
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: false
       responses:
         '200':
-          description: Utilisateur trouvé
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  username:
-                    type: string
-                  email:
-                    type: string
-        '404':
-          description: Utilisateur non trouvé
+          description: Résultats de recherche
 
-  /projects:
+  /user:
+    get:
+      tags:
+        - Users
+      summary: Récupérer un utilisateur par ID
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Détails de l'utilisateur
+
+  /posts:
+    get:
+      tags:
+        - Posts
+      summary: Récupérer tous les posts
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: Liste des posts
     post:
-      summary: Créer un projet
-      description: Permet à un utilisateur de créer un projet qu'il souhaite financer ou promouvoir.
-      operationId: createProject
+      tags:
+        - Posts
+      summary: Créer un nouveau post
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - title
-                - description
-                - targetAmount
               properties:
                 title:
                   type: string
                 description:
                   type: string
-                targetAmount:
-                  type: number
-                  format: float
-                userId:
+                image_url:
+                  type: string
+                public_id:
+                  type: string
+                user_id:
                   type: string
       responses:
         '201':
-          description: Projet créé avec succès
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  projectId:
-                    type: string
-                    example: "project123"
-        '400':
-          description: Données manquantes ou invalides
-
-  /projects/{projectId}:
-    get:
-      summary: Récupérer les détails d'un projet
-      description: Récupère les informations d'un projet spécifique.
-      operationId: getProjectDetails
+          description: Post créé
+    delete:
+      tags:
+        - Posts
+      summary: Supprimer un post
       parameters:
-        - name: projectId
-          in: path
+        - in: query
+          name: id
+          schema:
+            type: string
           required: true
-          description: ID du projet
+      responses:
+        '200':
+          description: Post supprimé
+
+  /posts/user:
+    get:
+      tags:
+        - Posts
+      summary: Récupérer les posts d’un utilisateur
+      parameters:
+        - in: query
+          name: user_id
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: Liste des posts d'un utilisateur
+
+  /posts/{id}:
+    get:
+      tags:
+        - Posts
+      summary: Récupérer un post par ID
+      parameters:
+        - in: path
+          name: id
+          required: true
           schema:
             type: string
       responses:
         '200':
-          description: Détails du projet récupérés
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  projectId:
-                    type: string
-                  title:
-                    type: string
-                  description:
-                    type: string
-                  targetAmount:
-                    type: number
-                    format: float
-                  raisedAmount:
-                    type: number
-                    format: float
-        '404':
-          description: Projet non trouvé
+          description: Détails du post
 
-  /projects/{projectId}/supporters:
+  /message:
     post:
-      summary: Soutenir un projet
-      description: Permet à un utilisateur de soutenir un projet avec une contribution.
-      operationId: supportProject
-      parameters:
-        - name: projectId
-          in: path
-          required: true
-          description: ID du projet
-          schema:
-            type: string
+      tags:
+        - Messages
+      summary: Envoyer un message
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - userId
-                - amount
               properties:
-                userId:
+                id:
                   type: string
-                amount:
-                  type: number
-                  format: float
+                senderId:
+                  type: string
+                receiverId:
+                  type: string
+                content:
+                  type: string
+                sentAt:
+                  type: string
+                  format: date-time
       responses:
         '201':
-          description: Soutien apporté avec succès
-        '400':
-          description: Données invalides
+          description: Message envoyé
     get:
-      summary: Récupérer les personnes ayant soutenu un projet
-      description: Récupère la liste des utilisateurs ayant soutenu un projet.
-      operationId: getSupporters
+      tags:
+        - Messages
+      summary: Récupérer une discussion entre deux utilisateurs
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          description: ID du projet
+        - in: query
+          name: user1
           schema:
             type: string
+          required: true
+        - in: query
+          name: user2
+          schema:
+            type: string
+          required: true
       responses:
         '200':
-          description: Liste des supporters récupérée
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    userId:
-                      type: string
-                    amount:
-                      type: number
-                      format: float
-  /projects/{projectId}/investments:
-    post:
-      summary: Investir dans un projet
-      description: Permet à un utilisateur d'investir une certaine somme dans un projet.
-      operationId: investInProject
+          description: Messages entre deux utilisateurs
+
+  /chat:
+    get:
+      tags:
+        - Messages
+      summary: Récupérer toutes les discussions d’un utilisateur
       parameters:
-        - name: projectId
-          in: path
-          required: true
-          description: ID du projet
+        - in: query
+          name: userId
           schema:
             type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - userId
-                - amount
-              properties:
-                userId:
-                  type: string
-                amount:
-                  type: number
-                  format: float
+          required: true
       responses:
-        '201':
-          description: Investissement effectué avec succès
-        '400':
-          description: Données invalides
+        '200':
+          description: Liste des conversations
 
 components:
   schemas:
@@ -278,43 +252,42 @@ components:
       properties:
         id:
           type: string
-        username:
+        first_name:
           type: string
+        last_name:
+          type: string
+        birthday:
+          type: string
+          format: date
         email:
           type: string
-
-    Project:
+    Post:
       type: object
       properties:
-        projectId:
+        id:
           type: string
         title:
           type: string
         description:
           type: string
-        targetAmount:
-          type: number
-          format: float
-        raisedAmount:
-          type: number
-          format: float
-        userId:
+        image_url:
           type: string
-
-    Investment:
+        user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Message:
       type: object
       properties:
-        userId:
+        id:
           type: string
-        amount:
-          type: number
-          format: float
-
-    Support:
-      type: object
-      properties:
-        userId:
+        sender_id:
           type: string
-        amount:
-          type: number
-          format: float
+        receiver_id:
+          type: string
+        content:
+          type: string
+        sent_at:
+          type: string
+          format: date-time
